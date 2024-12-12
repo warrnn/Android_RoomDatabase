@@ -1,22 +1,22 @@
 package com.android.room
 
 import android.content.Intent
-import android.telecom.Call
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.android.room.database.DatftarBelanja
+import com.android.room.database.DaftarBelanja
 
-class AdapterDaftar(private val daftarBelanja: MutableList<DatftarBelanja>) :
+class AdapterDaftar(private val daftarBelanja: MutableList<DaftarBelanja>) :
     RecyclerView.Adapter<AdapterDaftar.ListViewHolder>() {
 
     private lateinit var onItemClickCall: OnItemClickCallBack
 
     interface OnItemClickCallBack {
-        fun delData(dtBelanja: DatftarBelanja)
+        fun delData(dtBelanja: DaftarBelanja)
+        fun doneData(dtBelanja: DaftarBelanja)
     }
 
     fun setOnItemClickCallBack(onItemClickCallBack: OnItemClickCallBack) {
@@ -28,6 +28,7 @@ class AdapterDaftar(private val daftarBelanja: MutableList<DatftarBelanja>) :
         var _tvItem = itemView.findViewById<TextView>(R.id.tvItem)
         var _tvJumlah = itemView.findViewById<TextView>(R.id.tvJumlah)
 
+        var _ibDone = itemView.findViewById<ImageButton>(R.id.ibDone)
         var _ibEdit = itemView.findViewById<ImageButton>(R.id.ibEdit)
         var _ibDelete = itemView.findViewById<ImageButton>(R.id.ibDelete)
     }
@@ -49,6 +50,10 @@ class AdapterDaftar(private val daftarBelanja: MutableList<DatftarBelanja>) :
         holder._tvItem.setText(daftar.item)
         holder._tvJumlah.setText(daftar.jumlah.toString())
 
+        holder._ibDone.setOnClickListener {
+            onItemClickCall.doneData(daftar)
+        }
+
         holder._ibEdit.setOnClickListener {
             val intent = Intent(it.context, TambahDaftar::class.java)
             intent.putExtra("id", daftar.id)
@@ -65,7 +70,7 @@ class AdapterDaftar(private val daftarBelanja: MutableList<DatftarBelanja>) :
         return daftarBelanja.size
     }
 
-    fun isiData(daftar: List<DatftarBelanja>) {
+    fun isiData(daftar: List<DaftarBelanja>) {
         daftarBelanja.clear()
         daftarBelanja.addAll(daftar)
         notifyDataSetChanged()

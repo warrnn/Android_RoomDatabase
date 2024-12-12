@@ -9,17 +9,17 @@ import androidx.room.Query
 @Dao
 interface DaftarBelanjaDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(daftar: DatftarBelanja)
+    fun insert(daftar: DaftarBelanja)
 
-    @Query("UPDATE DatftarBelanja SET tanggal=:isi_tanggal, item=:isi_item, jumlah=:isi_jumlah, status=:isi_status WHERE id=:pilih_id")
+    @Query("UPDATE DaftarBelanja SET tanggal=:isi_tanggal, item=:isi_item, jumlah=:isi_jumlah, status=:isi_status WHERE id=:pilih_id")
     fun update(isi_tanggal: String, isi_item: String, isi_jumlah: Int, isi_status: Int, pilih_id: Int)
 
-    @Query("SELECT * FROM DatftarBelanja WHERE id=:isi_id")
-    suspend fun getItem(isi_id: Int): DatftarBelanja
+    @Query("SELECT * FROM DaftarBelanja WHERE id=:isi_id")
+    suspend fun getItem(isi_id: Int): DaftarBelanja
 
     @Delete
-    fun delete(daftar: DatftarBelanja)
+    fun delete(daftar: DaftarBelanja)
 
-    @Query("SELECT * FROM DatftarBelanja ORDER BY id ASC")
-    fun selectAll(): List<DatftarBelanja>
+    @Query("SELECT * FROM DaftarBelanja ORDER BY id ASC")
+    fun selectAll(): List<DaftarBelanja>
 }

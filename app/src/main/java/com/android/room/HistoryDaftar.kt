@@ -7,32 +7,28 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.room.database.AppDatabase
-import com.android.room.database.DaftarBelanja
 import com.android.room.database.HistoryBelanja
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 
-class MainActivity : AppCompatActivity() {
+class HistoryDaftar : AppCompatActivity() {
     private lateinit var DB: AppDatabase
-    private lateinit var _fabAdd: FloatingActionButton
-    private lateinit var adapterDaftar: AdapterDaftar
+    private lateinit var adapterHistory: AdapterHistory
 
-    private var arDaftar: MutableList<DaftarBelanja> = mutableListOf()
+    private var arHistory: MutableList<HistoryBelanja> = mutableListOf()
 
     private lateinit var bottomNavigationView: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_history_daftar)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -40,44 +36,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         DB = AppDatabase.getDatabase(this)
-        adapterDaftar = AdapterDaftar(arDaftar)
-        _fabAdd = findViewById(R.id.fabAdd)
+        adapterHistory = AdapterHistory(arHistory)
 
-        var _rvDaftar = findViewById<RecyclerView>(R.id.rvDaftar)
-        _rvDaftar.layoutManager = LinearLayoutManager(this)
-        _rvDaftar.adapter = adapterDaftar
+        var _rvHistory = findViewById<RecyclerView>(R.id.rvHistory)
+        _rvHistory.layoutManager = LinearLayoutManager(this)
+        _rvHistory.adapter = adapterHistory
 
-        _fabAdd.setOnClickListener {
-            startActivity(
-                Intent(this, TambahDaftar::class.java)
-            )
-        }
-
-        adapterDaftar.setOnItemClickCallBack(
-            object : AdapterDaftar.OnItemClickCallBack {
-                override fun delData(dtBelanja: DaftarBelanja) {
+        adapterHistory.setOnItemClickCallBack(
+            object : AdapterHistory.OnItemClickCallBack {
+                override fun delHistory(dtHistory: HistoryBelanja) {
                     CoroutineScope(Dispatchers.IO).async {
-                        DB.funDaftarBelanjaDAO().delete(dtBelanja)
-                        val daftar = DB.funDaftarBelanjaDAO().selectAll()
+                        DB.funHistoryBelanjaDAO().delete(dtHistory)
+                        val history = DB.funHistoryBelanjaDAO().selectALl()
                         withContext(Dispatchers.Main) {
-                            adapterDaftar.isiData(daftar)
-                        }
-                    }
-                }
-
-                override fun doneData(dtBelanja: DaftarBelanja) {
-                    CoroutineScope(Dispatchers.IO).async {
-                        DB.funHistoryBelanjaDAO().insert(
-                            HistoryBelanja(
-                                tanggal = dtBelanja.tanggal,
-                                item = dtBelanja.item,
-                                jumlah = dtBelanja.jumlah
-                            )
-                        )
-                        DB.funDaftarBelanjaDAO().delete(dtBelanja)
-                        val daftar = DB.funDaftarBelanjaDAO().selectAll()
-                        withContext(Dispatchers.Main) {
-                            adapterDaftar.isiData(daftar)
+                            adapterHistory.isiData(history)
                         }
                     }
                 }
@@ -107,9 +79,9 @@ class MainActivity : AppCompatActivity() {
 
         super.onStart()
         CoroutineScope(Dispatchers.Main).async {
-            val daftarBelanja = DB.funDaftarBelanjaDAO().selectAll()
-            Log.d("Data ROOM", daftarBelanja.toString())
-            adapterDaftar.isiData(daftarBelanja)
+            val historyBelanja = DB.funHistoryBelanjaDAO().selectALl()
+            Log.d("Data ROOM", historyBelanja.toString())
+            adapterHistory.isiData(historyBelanja)
         }
     }
 }

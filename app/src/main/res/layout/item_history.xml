@@ -31,26 +31,6 @@
         app:layout_constraintTop_toBottomOf="@id/tvItem" />
 
     <ImageButton
-        android:id="@+id/ibDone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/baseline_done_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ibEdit"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#0000FF" />
-
-    <ImageButton
-        android:id="@+id/ibEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/round_edit_note_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ibDelete"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#008000" />
-
-    <ImageButton
         android:id="@+id/ibDelete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

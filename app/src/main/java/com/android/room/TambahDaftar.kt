@@ -9,8 +9,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.android.room.database.DaftarBelanjaDatabase
-import com.android.room.database.DatftarBelanja
+import com.android.room.database.AppDatabase
+import com.android.room.database.DaftarBelanja
 import com.android.room.helper.DateHelper.getCurrentDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +22,7 @@ class TambahDaftar : AppCompatActivity() {
     private lateinit var _btnTambah: Button
     private lateinit var _btnUpdate: Button
 
-    var DB = DaftarBelanjaDatabase.getDatabase(this)
+    var DB = AppDatabase.getDatabase(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +44,7 @@ class TambahDaftar : AppCompatActivity() {
         _btnTambah.setOnClickListener {
             CoroutineScope(Dispatchers.IO).async {
                 DB.funDaftarBelanjaDAO().insert(
-                    DatftarBelanja(
+                    DaftarBelanja(
                         tanggal = tanggal,
                         item = _etItem.text.toString(),
                         jumlah = _etJumlah.text.toString().toInt(),
