@@ -21,12 +21,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var DB: AppDatabase
-    private lateinit var _fabAdd: FloatingActionButton
-    private lateinit var adapterDaftar: AdapterDaftar
-
-    private var arDaftar: MutableList<DaftarBelanja> = mutableListOf()
-
     private lateinit var bottomNavigationView: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,77 +33,38 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        DB = AppDatabase.getDatabase(this)
-        adapterDaftar = AdapterDaftar(arDaftar)
-        _fabAdd = findViewById(R.id.fabAdd)
+        val mFragmentManager = supportFragmentManager
 
-        var _rvDaftar = findViewById<RecyclerView>(R.id.rvDaftar)
-        _rvDaftar.layoutManager = LinearLayoutManager(this)
-        _rvDaftar.adapter = adapterDaftar
+        val fDaftar = DaftarFragment()
+        val fHistory = HistoryFragment()
 
-        _fabAdd.setOnClickListener {
-            startActivity(
-                Intent(this, TambahDaftar::class.java)
-            )
-        }
-
-        adapterDaftar.setOnItemClickCallBack(
-            object : AdapterDaftar.OnItemClickCallBack {
-                override fun delData(dtBelanja: DaftarBelanja) {
-                    CoroutineScope(Dispatchers.IO).async {
-                        DB.funDaftarBelanjaDAO().delete(dtBelanja)
-                        val daftar = DB.funDaftarBelanjaDAO().selectAll()
-                        withContext(Dispatchers.Main) {
-                            adapterDaftar.isiData(daftar)
-                        }
-                    }
-                }
-
-                override fun doneData(dtBelanja: DaftarBelanja) {
-                    CoroutineScope(Dispatchers.IO).async {
-                        DB.funHistoryBelanjaDAO().insert(
-                            HistoryBelanja(
-                                tanggal = dtBelanja.tanggal,
-                                item = dtBelanja.item,
-                                jumlah = dtBelanja.jumlah
-                            )
-                        )
-                        DB.funDaftarBelanjaDAO().delete(dtBelanja)
-                        val daftar = DB.funDaftarBelanjaDAO().selectAll()
-                        withContext(Dispatchers.Main) {
-                            adapterDaftar.isiData(daftar)
-                        }
-                    }
-                }
-            }
-        )
+        mFragmentManager.findFragmentByTag(fDaftar::class.java.simpleName)
+        mFragmentManager
+            .beginTransaction()
+            .add(R.id.fragmentContainer, fDaftar, DaftarFragment::class.java.simpleName)
+            .commit()
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
-        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
+        bottomNavigationView.setOnNavigationItemSelectedListener { it ->
+            when (it.itemId) {
                 R.id.navDaftar -> {
-                    startActivity(
-                        Intent(this, MainActivity::class.java)
-                    )
-                    true
+                    mFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.fragmentContainer, fDaftar, DaftarFragment::class.java.simpleName)
+                        .commit()
+                    return@setOnNavigationItemSelectedListener true
                 }
 
                 R.id.navHistory -> {
-                    startActivity(
-                        Intent(this, HistoryDaftar::class.java)
-                    )
-                    true
+                    mFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.fragmentContainer, fHistory, HistoryFragment::class.java.simpleName)
+                        .commit()
+                    return@setOnNavigationItemSelectedListener true
                 }
 
                 else -> false
             }
-        }
-
-        super.onStart()
-        CoroutineScope(Dispatchers.Main).async {
-            val daftarBelanja = DB.funDaftarBelanjaDAO().selectAll()
-            Log.d("Data ROOM", daftarBelanja.toString())
-            adapterDaftar.isiData(daftarBelanja)
         }
     }
 }
